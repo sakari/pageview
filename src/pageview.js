@@ -8,6 +8,7 @@
         console.log('loading ' + url);
         $.get(url, function(data) {
             var document = $(marked(data))
+
             document.find('a').each(function(ix, value) {
                 value = $(value)
                 value.attr('href', relativeTo(url, value.attr('href')));
@@ -15,7 +16,12 @@
                     pageview(container, value.attr('href'))
                     event.preventDefault()
                 })
-            })
+            });
+
+            document.find('img').each(function(ix, img) {
+                img = $(img);
+                img.attr('src', relativeTo(url, img.attr('src')))
+            });
             container.html(document)
         })
     }
