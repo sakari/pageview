@@ -4,6 +4,10 @@
         return dirname + to
     }
 
+    function isExternalUrl(url) {
+        return url.match(/^https?:\/\//)
+    }
+
     function pageview(container, url) {
         console.log('loading ' + url);
         $.get(url, function(data) {
@@ -11,6 +15,10 @@
 
             document.find('a').each(function(ix, value) {
                 value = $(value)
+
+                if(isExternalUrl(value.attr('href')))
+                   return;
+
                 value.attr('href', relativeTo(url, value.attr('href')));
                 value.click(function(event) {
                     pageview(container, value.attr('href'))
@@ -20,6 +28,8 @@
 
             document.find('img').each(function(ix, img) {
                 img = $(img);
+                if(isExternalUrl(img.attr('src')))
+                    return;
                 img.attr('src', relativeTo(url, img.attr('src')))
             });
             container.html(document)
