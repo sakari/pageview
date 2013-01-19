@@ -1,0 +1,22 @@
+{
+    "name": "pageview",
+    "version": "0.1.0",
+    "description": "Viewer for branch files inside the github page",
+    "author": "Sakari Jokinen <sakariij@gmail.com>",
+    "main": "src/index",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/sakari/pageview.git"
+    },
+    "dependencies": {
+        "underscore": "~1.3.3",
+        "marked": "~0.2.7"
+    },
+    "devDependencies": {
+        "mocha": "~1.4.2",
+        "should": "~1.1.1"
+    },
+    "scripts": {
+        "test": "node_modules/.bin/mocha"
+    }
+}
