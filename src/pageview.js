@@ -1,45 +1,65 @@
 (function() {
-    function relativeTo(from, to) {
-        var dirname = from.replace(/[^\/]+$/, '')
-        return dirname + to
+    var root
+
+    function relativeTo() {
+        var url = arguments[0];
+        for(var i = 1; i < arguments.length; i++) {
+            url = url.replace(/[^\/]+$/, '') + arguments[i]
+        }
+        return url
     }
 
     function isExternalUrl(url) {
         return url.match(/^https?:\/\//)
     }
 
-    function pageview(container, url) {
-        console.log('loading ' + url);
-        $.get(url, function(data) {
-            var document = $(marked(data))
+    function pageview(container) {
+        var url = relativeTo(root,
+                             document.location.hash.replace(/^#/, ''))
+        $.get(url,
+              function(data, status, jqxhr) {
+                  var contentType = jqxhr.getResponseHeader('content-type');
+                  if(contentType.match(/text\/html/) || url.match(/\.html$/))
+                      rendered = $(data);
+                  if(url.match(/\.md/))
+                      var rendered = $(marked(data))
 
-            document.find('a').each(function(ix, value) {
-                value = $(value)
+                  rendered.find('a').each(function(ix, value) {
+                      value = $(value)
 
-                if(isExternalUrl(value.attr('href')))
-                   return;
+                      if(isExternalUrl(value.attr('href')))
+                          return;
 
-                value.attr('href', relativeTo(url, value.attr('href')));
-                value.click(function(event) {
-                    pageview(container, value.attr('href'))
-                    event.preventDefault()
-                })
-            });
+                      var loadRelative = relativeTo(document.location.hash.replace(/^#/, ''),
+                                                    value.attr('href'));
+                      value.attr('href', relativeTo(root, loadRelative))
+                      value.click(function(event) {
+                          document.location.hash = loadRelative
+                          event.preventDefault()
+                                 });
+                  });
 
-            document.find('img').each(function(ix, img) {
-                img = $(img);
-                if(isExternalUrl(img.attr('src')))
-                    return;
-                img.attr('src', relativeTo(url, img.attr('src')))
-            });
-            container.html(document)
-        })
+                  rendered.find('img').each(function(ix, img) {
+                      img = $(img);
+                      if(isExternalUrl(img.attr('src')))
+                          return;
+                      img.attr('src',
+                               relativeTo(root,
+                                          document.location.hash.replace(/^#/, ''),
+                                          img.attr('src')))
+                  });
+                  container.html(rendered)
+              })
     }
 
     $(function() {
-        $('.pageview').each(function(ix, value) {
-            value = $(value);
-            pageview(value, value.attr('data-pageview-url'))
+        var container = $('.pageview')
+        root = container.attr('data-pageview-url')
+        if(!root.match('/'))
+            root = root + '/'
+        $(window).bind('hashchange', function() {
+            pageview(container)
         })
+        pageview(container)
     })
 })()
