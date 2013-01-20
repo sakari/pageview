@@ -1,4 +1,4 @@
-¤ pageview
+pageview
 
 ![an image](image.png)
 
