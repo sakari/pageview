@@ -63,8 +63,6 @@
             container.attr('data-pageview') +
             '/master/'
 
-        if(!root.match('/'))
-            root = root + '/'
         $(window).bind('hashchange', function() {
             pageview(container)
         })
