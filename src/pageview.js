@@ -1,5 +1,5 @@
 (function() {
-    var root
+    var apiRoot, imgRoot
 
     function relativeTo() {
         var url = arguments[0];
@@ -24,16 +24,18 @@
     }
 
     function pageview(container) {
-        var url = relativeTo(root,
+        var url = relativeTo(apiRoot,
                              document.location.hash.replace(/^#/, ''))
+        var imgUrl = relativeTo(imgRoot,
+                                document.location.hash.replace(/^#/, ''))
 
         $.ajax(url, {headers: { Accept: 'application/vnd.github.v3.raw'}})
             .done(function(data) {
                 var rendered
                 if(url.match(/\.html$/))
-                    rendered = $(renameImgSrc(url, data));
+                    rendered = $(renameImgSrc(imgUrl, data));
                 if(url.match(/\.md/))
-                    var rendered = $(renameImgSrc(url, marked(data)))
+                    var rendered = $(renameImgSrc(imgUrl, marked(data)))
 
                 rendered.find('a').each(function(ix, value) {
                     value = $(value)
@@ -43,7 +45,7 @@
 
                     var loadRelative = relativeTo(document.location.hash.replace(/^#/, ''),
                                                   value.attr('href'));
-                    value.attr('href', relativeTo(root, loadRelative))
+                    value.attr('href', '')
                     value.click(function(event) {
                         document.location.hash = loadRelative
                         event.preventDefault()
@@ -55,7 +57,12 @@
 
     $(function() {
         var container = $('.pageview')
-        root = container.attr('data-pageview-url')
+        apiRoot = 'https://api.github.com/repos/' +
+            container.attr('data-pageview') + '/contents/'
+        imgRoot = 'https://raw.github.com/' +
+            container.attr('data-pageview') +
+            '/master/'
+
         if(!root.match('/'))
             root = root + '/'
         $(window).bind('hashchange', function() {
