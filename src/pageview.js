@@ -13,6 +13,16 @@
         return url.match(/^https?:\/\//)
     }
 
+    function renameImgSrc(base, data) {
+        var p = data.replace(/(<\s*img [^>]*)\bsrc="([^">]+)"/,
+                             function(src, pre, url) {
+                                 if(isExternalUrl(url))
+                                     return src
+                                 return pre + 'src="' + relativeTo(base, url) + '"'
+                             })
+        return p
+    }
+
     function pageview(container) {
         var url = relativeTo(root,
                              document.location.hash.replace(/^#/, ''))
@@ -21,9 +31,9 @@
                   var rendered
                   var contentType = jqxhr.getResponseHeader('content-type');
                   if(contentType.match(/text\/html/) || url.match(/\.html$/))
-                      rendered = $(data);
+                      rendered = $(renameImgSrc(url, data));
                   if(url.match(/\.md/))
-                      var rendered = $(marked(data))
+                      var rendered = $(renameImgSrc(url, marked(data)))
 
                   rendered.find('a').each(function(ix, value) {
                       value = $(value)
@@ -38,16 +48,6 @@
                           document.location.hash = loadRelative
                           event.preventDefault()
                                  });
-                  });
-
-                  rendered.find('img').each(function(ix, img) {
-                      img = $(img);
-                      if(isExternalUrl(img.attr('src')))
-                          return;
-                      img.attr('src',
-                               relativeTo(root,
-                                          document.location.hash.replace(/^#/, ''),
-                                          img.attr('src')))
                   });
                   container.html(rendered)
               })
