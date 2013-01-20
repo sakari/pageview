@@ -26,31 +26,31 @@
     function pageview(container) {
         var url = relativeTo(root,
                              document.location.hash.replace(/^#/, ''))
-        $.get(url,
-              function(data, status, jqxhr) {
-                  var rendered
-                  var contentType = jqxhr.getResponseHeader('content-type');
-                  if(contentType.match(/text\/html/) || url.match(/\.html$/))
-                      rendered = $(renameImgSrc(url, data));
-                  if(url.match(/\.md/))
-                      var rendered = $(renameImgSrc(url, marked(data)))
 
-                  rendered.find('a').each(function(ix, value) {
-                      value = $(value)
+        $.ajax({headers: { Accept: 'application/vnd.github.v3.raw'}})
+            .done(function(data) {
+                var rendered
+                if(url.match(/\.html$/))
+                    rendered = $(renameImgSrc(url, data));
+                if(url.match(/\.md/))
+                    var rendered = $(renameImgSrc(url, marked(data)))
 
-                      if(isExternalUrl(value.attr('href')))
-                          return;
+                rendered.find('a').each(function(ix, value) {
+                    value = $(value)
 
-                      var loadRelative = relativeTo(document.location.hash.replace(/^#/, ''),
-                                                    value.attr('href'));
-                      value.attr('href', relativeTo(root, loadRelative))
-                      value.click(function(event) {
-                          document.location.hash = loadRelative
-                          event.preventDefault()
-                                 });
-                  });
-                  container.html(rendered)
-              })
+                    if(isExternalUrl(value.attr('href')))
+                        return;
+
+                    var loadRelative = relativeTo(document.location.hash.replace(/^#/, ''),
+                                                  value.attr('href'));
+                    value.attr('href', relativeTo(root, loadRelative))
+                    value.click(function(event) {
+                        document.location.hash = loadRelative
+                        event.preventDefault()
+                    });
+                });
+                container.html(rendered)
+            })
     }
 
     $(function() {
