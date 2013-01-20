@@ -32,6 +32,7 @@
         $.getJSON(url + '?callback=?')
             .done(function(data) {
                 var rendered
+                data = atob(data.data.content.replace(/\n/g, ''))
                 if(url.match(/\.html$/))
                     rendered = $(renameImgSrc(imgUrl, data));
                 if(url.match(/\.md/))
