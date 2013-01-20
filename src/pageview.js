@@ -18,6 +18,7 @@
                              document.location.hash.replace(/^#/, ''))
         $.get(url,
               function(data, status, jqxhr) {
+                  var rendered
                   var contentType = jqxhr.getResponseHeader('content-type');
                   if(contentType.match(/text\/html/) || url.match(/\.html$/))
                       rendered = $(data);
