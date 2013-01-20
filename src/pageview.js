@@ -27,7 +27,7 @@
         var url = relativeTo(root,
                              document.location.hash.replace(/^#/, ''))
 
-        $.ajax({headers: { Accept: 'application/vnd.github.v3.raw'}})
+        $.ajax(url, {headers: { Accept: 'application/vnd.github.v3.raw'}})
             .done(function(data) {
                 var rendered
                 if(url.match(/\.html$/))
