@@ -29,7 +29,7 @@
         var imgUrl = relativeTo(imgRoot,
                                 document.location.hash.replace(/^#/, ''))
 
-        $.ajax(url, {headers: { Accept: 'application/vnd.github.v3.raw'}})
+        $.getJSON(url + '?callback=call')
             .done(function(data) {
                 var rendered
                 if(url.match(/\.html$/))
