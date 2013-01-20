@@ -29,7 +29,7 @@
         var imgUrl = relativeTo(imgRoot,
                                 document.location.hash.replace(/^#/, ''))
 
-        $.getJSON(url + '?callback=call')
+        $.getJSON(url + '?callback=?')
             .done(function(data) {
                 var rendered
                 if(url.match(/\.html$/))
